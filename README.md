@@ -40,9 +40,7 @@ reportStatus(
 struct ContentView: View {
   var body: some View {
     AppRootView()
-      .showReportedStatus(alignment: .top, store: .init(initialState: .init(), reducer: {
-        ReportedStatusFeature()
-      }))
+      .showReportedStatus(alignment: .top)
   }
 }
 ```
@@ -109,9 +107,7 @@ List(1...20, id: \.self) { index in
         }
 }
 .buttonStyle(.bordered)
-.showReportedStatus(alignment: .top, store: .init(initialState: .init(), reducer: {
-    ReportedStatusFeature()
-}))
+.showReportedStatus(alignment: .top)
 .reportedStatusActions({ status in
     switch status.type {
     case .error:
