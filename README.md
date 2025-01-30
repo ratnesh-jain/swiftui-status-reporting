@@ -12,6 +12,8 @@ dependencies: [
 ### Report Status
 - Success Status
 ```swift
+import StatusReporting
+
 reportStatus(
   title: "Actions completed",
   message: "Item added to cart",
