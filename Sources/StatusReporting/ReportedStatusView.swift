@@ -100,7 +100,7 @@ extension StatusType {
 }
 
 extension View {
-    func showReportedStatus(alignment: Alignment = .bottom, store: StoreOf<ReportedStatusFeature> = .init(initialState: .init()) {
+    public func showReportedStatus(alignment: Alignment = .bottom, store: StoreOf<ReportedStatusFeature> = .init(initialState: .init()) {
         ReportedStatusFeature()
     }) -> some View {
         self.overlay(alignment: alignment) {
