@@ -1,5 +1,5 @@
 {
-  "originHash" : "f960c7ac552dffa45ce1655929f1cef34189955ba5de3216030227bf36ed99ca",
+  "originHash" : "1d54d81eefb01f10d6632186084f06d08609a589373cf431d515deba6e5834d7",
   "pins" : [
     {
       "identity" : "combine-schedulers",
@@ -98,6 +98,15 @@
       "state" : {
         "revision" : "9e9ec5177724e78de1ecfd5b7bf881ae027be4ac",
         "version" : "1.4.2"
+      }
+    },
+    {
+      "identity" : "swift-sensory-feedback",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ratnesh-jain/swift-sensory-feedback",
+      "state" : {
+        "revision" : "4c75b82ad0d893786497a792295e140887688599",
+        "version" : "0.0.1"
       }
     },
     {

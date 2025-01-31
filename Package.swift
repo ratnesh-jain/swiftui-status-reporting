@@ -7,6 +7,9 @@ extension Target.Dependency {
     static var tca: Self {
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
     }
+    static var sensoryFeedback: Self {
+        .product(name: "SensoryFeedbackClient", package: "swift-sensory-feedback")
+    }
 }
 
 let package = Package(
@@ -21,12 +24,16 @@ let package = Package(
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
             .upToNextMajor(from: "1.0.0")
+        ),
+        .package(
+            url: "https://github.com/ratnesh-jain/swift-sensory-feedback",
+            .upToNextMajor(from: "0.0.1")
         )
     ],
     targets: [
         .target(
             name: "StatusReporting",
-            dependencies: [.tca]
+            dependencies: [.sensoryFeedback, .tca]
         ),
     ]
 )

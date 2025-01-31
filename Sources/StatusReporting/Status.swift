@@ -5,9 +5,12 @@
 //  Created by Ratnesh Jain on 30/01/25.
 //
 
+import Dependencies
 import Foundation
 import IdentifiedCollections
 import Sharing
+import SensoryFeedbackClient
+import UIKit
 
 public enum StatusType: Codable, Hashable, Sendable {
     case error(String)
@@ -43,6 +46,13 @@ public func reportStatus(_ status: Status) {
     _ = $reportedStatus.withLock {
         $0.append(status)
     }
+    @Dependency(\.sensoryFeedback) var feedback
+    let type: UINotificationFeedbackGenerator.FeedbackType = switch status.type {
+    case .error: .error
+    case .warning: .warning
+    case .success: .success
+    }
+    feedback.notify(type: type)
 }
 
 public func reportStatus(title: String, message: String, type: StatusType = .success) {
@@ -54,4 +64,6 @@ public func markStatusAsReviewed(_ statusID: Status.ID) {
     _ = $reportedStatus.withLock {
         $0[id: statusID]?.isReviewed = true
     }
+    @Dependency(\.sensoryFeedback) var feedback
+    feedback.notify(type: .success)
 }
