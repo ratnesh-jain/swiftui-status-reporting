@@ -146,10 +146,10 @@ List(1...20, id: \.self) { index in
 .preferredColorScheme(.dark)
 ```
 
-# Result
+# Results
 
 https://github.com/user-attachments/assets/7c59b39a-8c2c-4814-a7ec-a68db12402eb
 
-## Update:
-- 0.0.4: 
- - Added support for optional haptic feedback.
+https://github.com/user-attachments/assets/581ace0b-4279-40ea-aef3-15a0ca5beb94
+
+
