@@ -45,7 +45,7 @@ public struct ReportedStatusView: View {
                                             store.showContent = false
                                         } completion: {
                                             markStatusAsReviewed(first.id)
-                                            store.send(.user(.disappeared))
+                                            store.send(.system(.disappeared))
                                         }
                                     }))
                             }
