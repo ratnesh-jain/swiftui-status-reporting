@@ -38,7 +38,7 @@ reportStatus(
 ```
 
 ### Interoperate with IssueReporting library.
-`StatusReporting` can listen to IssueReporting libraries events via `IssueReporter` protocol to display reportedIssues with `ReportedStatusView`.
+`StatusReporting` can listen to IssueReporting library events via `IssueReporter` protocol to display reportedIssues with `ReportedStatusView`.
 - By default, this only renders the UI when called `reportStatus` function, but to also render other issues reported using `reportIssue` function.
 - To do this, client can add `StatusReporter` to `IssueReporters` like below.
 
@@ -52,6 +52,7 @@ struct AwesomeApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+              .showReportedStatus(alignment: .top)
         }
     }
 }
