@@ -8,10 +8,6 @@ dependencies: [
 ]
 ```
 
-## Pre-requisite 
-iOS 17+
-
-
 ## Usage:
 ### Report Status
 - Success Status
@@ -155,4 +151,11 @@ List(1...20, id: \.self) { index in
 https://github.com/user-attachments/assets/7c59b39a-8c2c-4814-a7ec-a68db12402eb
 
 https://github.com/user-attachments/assets/581ace0b-4279-40ea-aef3-15a0ca5beb94
+
+## Pre-requisite 
+iOS 17+
+Internal Dependency: TCA (https://github.com/pointfreeco/swift-composable-architecture) 
+## Note: 
+- This library is intented for my other TCA toy projects.
+- Users are free to take inspiration of the code, view implementation, animation and apis.
 
