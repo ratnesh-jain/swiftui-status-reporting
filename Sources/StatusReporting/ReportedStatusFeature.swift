@@ -23,13 +23,48 @@ public struct ReportedStatusFeature {
         public init() {}
     }
     
+    @Dependency(\.sensoryFeedback) var feedback
+    
     public enum Action: Equatable, BindableAction {
+        public enum SystemAction: Equatable {
+            case onAppear
+        }
+        public enum UserAction: Equatable {
+            case actionButtonTapped(status: Status)
+        }
         case binding(BindingAction<State>)
+        case system(SystemAction)
+        case user(UserAction)
     }
     
     public init() {}
     
     public var body: some ReducerOf<Self> {
         BindingReducer()
+        Reduce<State, Action> { state, action in
+            switch action {
+            case .binding:
+                return .none
+            case .system(.onAppear):
+                if feedback.allowFeedback() {
+                    switch state.firstStatus?.type {
+                    case .error:
+                        feedback.notify(type: .error)
+                    case .warning:
+                        feedback.notify(type: .warning)
+                    case .success:
+                        feedback.notify(type: .success)
+                    case .none:
+                        break
+                    }
+                }
+                return .none
+            case .user(.actionButtonTapped(let status)):
+                if feedback.allowFeedback() {
+                    feedback.impact(style: .soft, intesity: 1)
+                }
+                return .none
+            }
+        }
     }
 }

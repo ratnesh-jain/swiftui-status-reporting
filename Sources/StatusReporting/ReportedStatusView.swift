@@ -39,6 +39,7 @@ public struct ReportedStatusView: View {
                                 Spacer()
                                 config.actions(first)
                                     .buttonStyle(StatusButtonStyle(action: {
+                                        store.send(.user(.actionButtonTapped(status: first)))
                                         withAnimation(.smooth) {
                                             store.showContent = false
                                         } completion: {
@@ -61,6 +62,7 @@ public struct ReportedStatusView: View {
                 }
                 .padding()
                 .onAppear {
+                    store.send(.system(.onAppear))
                     withAnimation(.smooth.delay(0.35)) {
                         store.showContent = true
                     }

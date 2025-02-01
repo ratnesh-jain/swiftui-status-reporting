@@ -46,24 +46,15 @@ public func reportStatus(_ status: Status) {
     _ = $reportedStatus.withLock {
         $0.append(status)
     }
-    @Dependency(\.sensoryFeedback) var feedback
-    let type: UINotificationFeedbackGenerator.FeedbackType = switch status.type {
-    case .error: .error
-    case .warning: .warning
-    case .success: .success
-    }
-    feedback.notify(type: type)
 }
 
 public func reportStatus(title: String, message: String, type: StatusType = .success) {
     reportStatus(Status(title: title, message: message, type: type))
 }
 
-public func markStatusAsReviewed(_ statusID: Status.ID) {
+public func markStatusAsReviewed(_ statusID: Status.ID, allowFeedback: Bool = true) {
     @Shared(.reportedStatus) var reportedStatus
     _ = $reportedStatus.withLock {
         $0[id: statusID]?.isReviewed = true
     }
-    @Dependency(\.sensoryFeedback) var feedback
-    feedback.notify(type: .success)
 }
