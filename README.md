@@ -8,6 +8,10 @@ dependencies: [
 ]
 ```
 
+## Pre-requisite 
+iOS 17+
+
+
 ## Usage:
 ### Report Status
 - Success Status
@@ -151,5 +155,4 @@ List(1...20, id: \.self) { index in
 https://github.com/user-attachments/assets/7c59b39a-8c2c-4814-a7ec-a68db12402eb
 
 https://github.com/user-attachments/assets/581ace0b-4279-40ea-aef3-15a0ca5beb94
-
 
