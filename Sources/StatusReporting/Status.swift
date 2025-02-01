@@ -12,14 +12,16 @@ import Sharing
 import SensoryFeedbackClient
 import UIKit
 
+/// Type of status that are reported using ``reportStatus``
 public enum StatusType: Codable, Hashable, Sendable {
     case error(String)
     case warning
     case success
 }
 
-public struct Status: Codable, Hashable, Identifiable, Sendable {
-    
+/// This type allows to construct a user facing status
+/// it case be a success status, warning status or error status which can be occured from any operation.
+public struct Status: Codable, Hashable, Identifiable, Sendable, Error {
     public var id: UUID
     public var title: String
     public var message: String
@@ -35,26 +37,11 @@ public struct Status: Codable, Hashable, Identifiable, Sendable {
     }
 }
 
+
 extension SharedKey where Self == InMemoryKey<IdentifiedArrayOf<Status>>.Default {
+    /// A global context aware thread safe in memory array of reported status via  ``reportStatus`` method.
     public static var reportedStatus: Self {
         self[.inMemory("reportedStatus"), default: .init()]
     }
 }
 
-public func reportStatus(_ status: Status) {
-    @Shared(.reportedStatus) var reportedStatus
-    _ = $reportedStatus.withLock {
-        $0.append(status)
-    }
-}
-
-public func reportStatus(title: String, message: String, type: StatusType = .success) {
-    reportStatus(Status(title: title, message: message, type: type))
-}
-
-public func markStatusAsReviewed(_ statusID: Status.ID, allowFeedback: Bool = true) {
-    @Shared(.reportedStatus) var reportedStatus
-    _ = $reportedStatus.withLock {
-        $0[id: statusID]?.isReviewed = true
-    }
-}

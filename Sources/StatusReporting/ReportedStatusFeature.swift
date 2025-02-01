@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Foundation
 
+/// Reducer for handling the reported status and user action with transition events.
 @Reducer
 public struct ReportedStatusFeature {
     @ObservableState
@@ -26,13 +27,26 @@ public struct ReportedStatusFeature {
     @Dependency(\.sensoryFeedback) var feedback
     
     public enum Action: Equatable, BindableAction {
+        public enum DelegateAction: Equatable {
+            case statusDisplaying
+            case statusDisplayed
+            case statusDisappearing
+            case statusDisappeared
+            case userPerformingAction(status: Status)
+        }
+        
         public enum SystemAction: Equatable {
             case onAppear
+            case initialAnimationCompleted
+            case disappeared
         }
+        
         public enum UserAction: Equatable {
             case actionButtonTapped(status: Status)
         }
+        
         case binding(BindingAction<State>)
+        case delegate(DelegateAction)
         case system(SystemAction)
         case user(UserAction)
     }
@@ -45,6 +59,10 @@ public struct ReportedStatusFeature {
             switch action {
             case .binding:
                 return .none
+                
+            case .delegate:
+                return .none
+                
             case .system(.onAppear):
                 if feedback.allowFeedback() {
                     switch state.firstStatus?.type {
@@ -58,12 +76,19 @@ public struct ReportedStatusFeature {
                         break
                     }
                 }
-                return .none
+                return .send(.delegate(.statusDisplaying))
+                
+            case .system(.initialAnimationCompleted):
+                return .send(.delegate(.statusDisplayed))
+                
+            case .system(.disappeared):
+                return .send(.delegate(.statusDisappeared))
+                
             case .user(.actionButtonTapped(let status)):
                 if feedback.allowFeedback() {
                     feedback.impact(style: .soft, intesity: 1)
                 }
-                return .none
+                return .send(.delegate(.statusDisappearing))
             }
         }
     }

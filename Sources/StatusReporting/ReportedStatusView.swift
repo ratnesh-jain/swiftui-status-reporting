@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Foundation
 import SwiftUI
 
+/// Primary SwiftUI View to present reported ``Status``.
 public struct ReportedStatusView: View {
     let store: StoreOf<ReportedStatusFeature>
     @Environment(\.reportStatusViewConfiguration) var config
@@ -44,6 +45,7 @@ public struct ReportedStatusView: View {
                                             store.showContent = false
                                         } completion: {
                                             markStatusAsReviewed(first.id)
+                                            store.send(.user(.disappeared))
                                         }
                                     }))
                             }
@@ -65,6 +67,8 @@ public struct ReportedStatusView: View {
                     store.send(.system(.onAppear))
                     withAnimation(.smooth.delay(0.35)) {
                         store.showContent = true
+                    } completion: {
+                        store.send(.system(.initialAnimationCompleted))
                     }
                 }
                 .transition(.scale.combined(with: .opacity))
@@ -72,22 +76,6 @@ public struct ReportedStatusView: View {
             }
         }
         .animation(.smooth, value: store.firstStatus)
-    }
-}
-
-struct StatusButtonStyle: ButtonStyle {
-    var action: () -> Void
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .padding(8)
-            .padding(.horizontal, 4)
-            .background(.quaternary, in: Capsule())
-            .opacity(configuration.isPressed ? 0.5 : 1)
-            .onChange(of: configuration.isPressed) { oldValue, newValue in
-                if oldValue == true && newValue == false {
-                    action()
-                }
-            }
     }
 }
 
@@ -102,6 +90,12 @@ extension StatusType {
 }
 
 extension View {
+    
+    /// Allows to display reported Status using ``ReportedStatusView`` as an overlay at the level of Application's root view.
+    /// - Parameters:
+    ///   - alignment: Aligment to where to display overlay of reported status's view.
+    ///   - store: An Composable architecture store for parent to observe and handle reported statuses.
+    /// - Returns: Root view with overlayedd ``ReportedStatusView``.
     public func showReportedStatus(alignment: Alignment = .bottom, store: StoreOf<ReportedStatusFeature> = .init(initialState: .init()) {
         ReportedStatusFeature()
     }) -> some View {
