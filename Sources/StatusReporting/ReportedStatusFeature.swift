@@ -28,6 +28,7 @@ public struct ReportedStatusFeature {
     
     public enum Action: Equatable, BindableAction {
         public enum DelegateAction: Equatable {
+            case statusWillDisplay
             case statusDisplaying
             case statusDisplayed
             case statusDisappearing
@@ -36,6 +37,7 @@ public struct ReportedStatusFeature {
         }
         
         public enum SystemAction: Equatable {
+            case willAppear
             case onAppear
             case initialAnimationCompleted
             case disappeared
@@ -63,6 +65,9 @@ public struct ReportedStatusFeature {
             case .delegate:
                 return .none
                 
+            case .system(.willAppear):
+                return .send(.delegate(.statusWillDisplay))
+                
             case .system(.onAppear):
                 if feedback.allowFeedback() {
                     switch state.firstStatus?.type {
@@ -84,7 +89,7 @@ public struct ReportedStatusFeature {
             case .system(.disappeared):
                 return .send(.delegate(.statusDisappeared))
                 
-            case .user(.actionButtonTapped(let status)):
+            case .user(.actionButtonTapped(_)):
                 if feedback.allowFeedback() {
                     feedback.impact(style: .soft, intesity: 1)
                 }

@@ -76,6 +76,11 @@ public struct ReportedStatusView: View {
             }
         }
         .animation(.smooth, value: store.firstStatus)
+        .onChange(of: store.firstStatus) { oldValue, newValue in
+            if newValue != nil {
+                store.send(.system(.willAppear))
+            }
+        }
     }
 }
 
