@@ -47,8 +47,17 @@ extension ReportedStatusViewConfiguration: EnvironmentKey {
                     Text(status.title)
                         .fontWeight(.semibold)
                     Text(status.message)
-                        .foregroundStyle(.secondary)
-                        .font(.subheadline)
+                        .lineLimit(8, reservesSpace: false)
+                        .frame(maxWidth: .infinity)
+                        .opacity(0)
+                        .overlay {
+                            ScrollView {
+                                Text(status.message)
+                                    .foregroundStyle(.secondary)
+                                    .font(.subheadline)
+                            }
+                            .scrollBounceBehavior(.basedOnSize)
+                        }
                 }
             )
         } actions: { status in
