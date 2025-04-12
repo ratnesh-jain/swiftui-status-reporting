@@ -48,7 +48,7 @@ extension ReportedStatusViewConfiguration: EnvironmentKey {
                         .fontWeight(.semibold)
                     Text(status.message)
                         .lineLimit(8, reservesSpace: false)
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .opacity(0)
                         .overlay {
                             ScrollView {
