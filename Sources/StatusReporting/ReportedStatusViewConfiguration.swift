@@ -55,6 +55,8 @@ extension ReportedStatusViewConfiguration: EnvironmentKey {
                                 Text(status.message)
                                     .foregroundStyle(.secondary)
                                     .font(.subheadline)
+                                    .multilineTextAlignment(.leading)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
                             .scrollBounceBehavior(.basedOnSize)
                         }
