@@ -14,71 +14,47 @@ public struct ReportedStatusView: View {
     let store: StoreOf<ReportedStatusFeature>
     @Environment(\.reportStatusViewConfiguration) var config
     
-    var cornerRadius: CGFloat {
-        store.showContent ? 20 : 42
-    }
-    
     public init(store: StoreOf<ReportedStatusFeature>) {
         self.store = store
     }
     
     public var body: some View {
-        ZStack {
-            if let first = store.firstStatus {
-                HStack(alignment: .top, spacing: 8) {
-                    config.image(first)
-                        .font(.title2)
-                        .foregroundStyle(.primary)
-                        .frame(width: 34, height: 34)
-                        .padding(8)
-                        .background(first.type.accentColor.secondary, in: .circle)
-                    if store.showContent {
-                        VStack(spacing: 8) {
-                            config.content(first)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            HStack {
-                                Spacer()
-                                config.actions(first)
-                                    .buttonStyle(StatusButtonStyle(action: {
-                                        store.send(.user(.actionButtonTapped(status: first)))
-                                        withAnimation(.smooth) {
-                                            store.showContent = false
-                                        } completion: {
-                                            markStatusAsReviewed(first.id)
-                                            store.send(.system(.disappeared))
-                                        }
-                                    }))
-                            }
-                        }
-                        .frame(maxWidth: config.maxWidth())
-                        .transition(.opacity)
+        ZStack(alignment: .bottom) {
+            if let latest = store.latestStatus, store.startTransition {
+                StatusItemView(status: latest, store: store)
+                    .id(latest.id)
+                    .zIndex(CGFloat(store.allStatus.count + 1))
+            }
+            if !store.allStatus.isEmpty {
+                ZStack {
+                    ForEach(Array(store.allStatus.enumerated()), id: \.element.id) { (idx, status) in
+                        StatusItemView(status: status, animate: false, store: store)
+                            .offset(y: CGFloat(store.allStatus.count - idx) * 10)
+                            .zIndex(CGFloat(idx))
                     }
                 }
-                .padding()
-                .clipShape(.rect(cornerRadius: cornerRadius))
-                .background(Material.bar, in: .rect(cornerRadius: cornerRadius))
-                .background(first.type.accentColor.tertiary, in: .rect(cornerRadius: cornerRadius))
-                .overlay {
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .stroke(first.type.accentColor.secondary, lineWidth: 1)
-                }
-                .padding()
-                .onAppear {
-                    store.send(.system(.onAppear))
-                    withAnimation(.smooth.delay(0.35)) {
-                        store.showContent = true
-                    } completion: {
-                        store.send(.system(.initialAnimationCompleted))
-                    }
-                }
-                .transition(.scale.combined(with: .opacity))
-                .id(first.id)
+                .animation(.smooth, value: store.allStatus.count)
             }
         }
-        .animation(.smooth, value: store.firstStatus)
-        .onChange(of: store.firstStatus) { oldValue, newValue in
+        .onAppear {
+            store.send(.system(.willAppear))
+            Task {
+                try? await Task.sleep(for: .seconds(0.2))
+                withAnimation(.smooth) {
+                    store.startTransition = true
+                }
+            }
+        }
+        .animation(.smooth, value: store.latestStatus)
+        .onChange(of: store.latestStatus) { oldValue, newValue in
             if newValue != nil {
                 store.send(.system(.willAppear))
+                Task {
+                    try? await Task.sleep(for: .seconds(0.2))
+                    withAnimation(.smooth) {
+                        store.startTransition = true
+                    }
+                }
             }
         }
     }
@@ -90,22 +66,6 @@ extension StatusType {
         case .error: .red
         case .warning: .yellow
         case .success: .green
-        }
-    }
-}
-
-extension View {
-    
-    /// Allows to display reported Status using ``ReportedStatusView`` as an overlay at the level of Application's root view.
-    /// - Parameters:
-    ///   - alignment: Aligment to where to display overlay of reported status's view.
-    ///   - store: An Composable architecture store for parent to observe and handle reported statuses.
-    /// - Returns: Root view with overlayedd ``ReportedStatusView``.
-    public func showReportedStatus(alignment: Alignment = .bottom, store: StoreOf<ReportedStatusFeature> = .init(initialState: .init()) {
-        ReportedStatusFeature()
-    }) -> some View {
-        self.overlay(alignment: alignment) {
-            ReportedStatusView(store: store)
         }
     }
 }
@@ -126,7 +86,9 @@ extension View {
             }
     }
     .buttonStyle(.bordered)
-    .showReportedStatus(alignment: .top)
+    .showReportedStatus(alignment: .top, store: .init(initialState: .init(), reducer: {
+        ReportedStatusFeature()
+    }))
     .reportedStatusActions({ status in
         switch status.type {
         case .error:

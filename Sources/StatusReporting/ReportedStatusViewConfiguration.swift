@@ -53,7 +53,7 @@ extension ReportedStatusViewConfiguration: EnvironmentKey {
                         .overlay {
                             ScrollView {
                                 Text(status.message)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(.primary)
                                     .font(.subheadline)
                                     .multilineTextAlignment(.leading)
                                     .frame(maxWidth: .infinity, alignment: .leading)

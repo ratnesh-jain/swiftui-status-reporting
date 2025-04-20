@@ -26,6 +26,7 @@ public struct Status: Codable, Hashable, Identifiable, Sendable, Error {
     public var title: String
     public var message: String
     public var type: StatusType
+    public var reportDate: Date
     public var isReviewed: Bool
     
     public init(id: UUID = .init(), title: String, message: String, type: StatusType = .success, isReviewed: Bool = false) {
@@ -33,10 +34,16 @@ public struct Status: Codable, Hashable, Identifiable, Sendable, Error {
         self.title = title
         self.message = message
         self.type = type
+        self.reportDate = Date()
         self.isReviewed = isReviewed
     }
 }
 
+extension SharedKey where Self == InMemoryKey<Status?>.Default {
+    public static var latestStatus: Self {
+        self[.inMemory("latestStatus"), default: nil]
+    }
+}
 
 extension SharedKey where Self == InMemoryKey<IdentifiedArrayOf<Status>>.Default {
     /// A global context aware thread safe in memory array of reported status via  ``reportStatus`` method.

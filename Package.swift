@@ -19,6 +19,10 @@ let package = Package(
         .library(
             name: "StatusReporting",
             targets: ["StatusReporting"]),
+        .library(
+            name: "WindowOverlay",
+            targets: ["WindowOverlay"]
+        ),
     ],
     dependencies: [
         .package(
@@ -32,8 +36,12 @@ let package = Package(
     ],
     targets: [
         .target(
+            name: "WindowOverlay",
+            dependencies: []
+        ),
+        .target(
             name: "StatusReporting",
-            dependencies: [.sensoryFeedback, .tca]
+            dependencies: [.sensoryFeedback, .tca, "WindowOverlay"]
         ),
     ]
 )

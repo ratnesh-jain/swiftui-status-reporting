@@ -18,9 +18,13 @@ import Sharing
 /// - Parameter status: A type that represent the success, warning or error status in a user friendly way
 public func reportStatus(_ status: Status) {
     @Shared(.reportedStatus) var reportedStatus
-    _ = $reportedStatus.withLock {
-        $0.append(status)
+    @Shared(.latestStatus) var latestStatus
+    if let latestStatus, latestStatus.isReviewed == false, latestStatus.id != status.id {
+        _ = $reportedStatus.withLock {
+            $0.append(latestStatus)
+        }
     }
+    $latestStatus.withLock { $0 = status }
 }
 
 /// Report a status of either success, warning or error.
@@ -36,6 +40,13 @@ public func reportStatus(title: String, message: String, type: StatusType = .suc
 ///   - statusID: ID of the reported status
 public func markStatusAsReviewed(_ statusID: Status.ID) {
     @Shared(.reportedStatus) var reportedStatus
+    @Shared(.latestStatus) var latestStatus
+    var lastReportedStatus = latestStatus
+    lastReportedStatus?.isReviewed = true
+    if latestStatus?.id == statusID, let lastReportedStatus {
+        $latestStatus.withLock { $0 = nil }
+        _ = $reportedStatus.withLock { $0.append(lastReportedStatus) }
+    }
     _ = $reportedStatus.withLock {
         $0[id: statusID]?.isReviewed = true
     }
