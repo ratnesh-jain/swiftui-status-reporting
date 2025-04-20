@@ -13,18 +13,20 @@ import Foundation
 public struct ReportedStatusFeature {
     @ObservableState
     public struct State: Equatable {
-        @Shared(.reportedStatus) var reportedStatus
-        var showAllStatus: Bool = false
-        var showContent: Bool = false
+        @Shared(.reportedStatus) private var reportedStatus
+        @Shared(.latestStatus) var latestStatus
+        var startTransition: Bool = false
         
-        var firstStatus: Status? {
-            reportedStatus.first(where: {$0.isReviewed == false})
+        var allStatus: [Status] {
+            self.reportedStatus.filter({$0.isReviewed == false})
         }
         
         public init() {}
     }
     
     @Dependency(\.sensoryFeedback) var feedback
+    
+    public init() {}
     
     public enum Action: Equatable, BindableAction {
         public enum DelegateAction: Equatable {
@@ -53,8 +55,6 @@ public struct ReportedStatusFeature {
         case user(UserAction)
     }
     
-    public init() {}
-    
     public var body: some ReducerOf<Self> {
         BindingReducer()
         Reduce<State, Action> { state, action in
@@ -70,7 +70,7 @@ public struct ReportedStatusFeature {
                 
             case .system(.onAppear):
                 if feedback.allowFeedback() {
-                    switch state.firstStatus?.type {
+                    switch state.latestStatus?.type {
                     case .error:
                         feedback.notify(type: .error)
                     case .warning:
